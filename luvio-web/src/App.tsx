@@ -1,25 +1,152 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #111;
+  color: #e9e2c8; /* Light gold/cream color for text */
+  text-align: center;
+`;
+
+const Logo = styled.h1`
+  font-size: 5rem;
+  margin-bottom: 0.5rem;
+  color: #e84118; /* Red-orange color for LUVIO */
+  font-weight: bold;
+  letter-spacing: 2px;
+`;
+
+const Tagline = styled.h2`
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  font-weight: 500;
+`;
+
+const BandsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
+`;
+
+const Band = styled.div<{ color: string }>`
+  width: 180px;
+  height: 40px;
+  background-color: ${(props) => props.color};
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+`;
+
+const Heading = styled.h2`
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+`;
+
+const Subheading = styled.h3`
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+`;
+
+const Info = styled.div`
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+`;
+
+const BandInfo = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+const ColorText = styled.span<{ color: string }>`
+  color: ${(props) => props.color};
+  font-weight: bold;
+`;
+
+const Price = styled.h2`
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+`;
+
+const Footer = styled.div`
+  font-size: 1.2rem;
+  margin-top: 2rem;
+`;
+
+const Hashtag = styled.span`
+  margin: 0 10px;
+`;
 
 function App() {
+  // useEffect(() => {
+  //   // Redirect to the main site after a brief delay
+  //   const timer = setTimeout(() => {
+  //     window.location.href = "https://www.luvioband.co.uk";
+  //   }, 5000); // 5 seconds delay
+
+  //   return () => clearTimeout(timer);
+  // }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <Logo>LUVIO</Logo>
+      <Tagline>The Wristband That Speaks Before You Do</Tagline>
+
+      <BandsContainer>
+        <Band color="#e74c3c">NOT INTERESTED</Band>
+        <Band color="#f1c40f">MAYBE I'LL APPROACH</Band>
+        <Band color="#2ecc71">COME SAY HI</Band>
+      </BandsContainer>
+
+      <Heading>Going out tonight?</Heading>
+      <Subheading>Let your band do the talking.</Subheading>
+
+      <Info>
+        Buy a LUVIO band for just £1 and wear it at clubs and pubs to signal
+        your vibe:
+      </Info>
+
+      <BandInfo>
+        <ColorText color="#e74c3c">RED</ColorText> – Not looking for a
+        relationship. Please don't approach.
+      </BandInfo>
+      <BandInfo>
+        <ColorText color="#f1c40f">YELLOW</ColorText> – Might be open..., but
+        I'll make the first move.
+      </BandInfo>
+      <BandInfo>
+        <ColorText color="#2ecc71">GREEN</ColorText> – Open to connection. Feel
+        free to come say hello.
+      </BandInfo>
+
+      <Price>Available at the bar for just £1</Price>
+
+      <Footer>
+        Join the vibe. Wear your color. Find your people.
+        <div>
+          <Hashtag>#LuvioBand</Hashtag>
+          <Hashtag>#LetItShow</Hashtag>
+        </div>
+      </Footer>
+
+      <div style={{ marginTop: "20px" }}>
+        Redirecting to www.luvioband.co.uk in a few seconds...
+      </div>
+    </Container>
   );
 }
 
