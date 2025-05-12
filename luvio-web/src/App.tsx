@@ -150,7 +150,7 @@ function App() {
         free to come say hello.
       </BandInfo>
 
-      <Price>Available at the bar for just £1</Price>
+      <Price>Available at the bar for just £2</Price>
 
       <Footer>
         Join the vibe. Wear your color. Find your people.
