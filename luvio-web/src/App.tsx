@@ -91,16 +91,33 @@ const Hashtag = styled.span`
   margin: 0 10px;
 `;
 
+const SocialLinksContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 10px;
+`;
+
+const SocialLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e9e2c8;
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #e84118;
+  }
+`;
+
+const SocialIcon = styled.div`
+  margin-right: 10px;
+  font-size: 1.5rem;
+`;
+
 function App() {
-  // useEffect(() => {
-  //   // Redirect to the main site after a brief delay
-  //   const timer = setTimeout(() => {
-  //     window.location.href = "https://www.luvioband.co.uk";
-  //   }, 5000); // 5 seconds delay
-
-  //   return () => clearTimeout(timer);
-  // }, []);
-
   return (
     <Container>
       <Logo>LUVIO</Logo>
@@ -143,9 +160,21 @@ function App() {
         </div>
       </Footer>
 
-      <div style={{ marginTop: "20px" }}>
-        Redirecting to www.luvioband.co.uk in a few seconds...
-      </div>
+      <SocialLinksContainer>
+        <SocialLink href="mailto:Luvioband@outlook.com">
+          <SocialIcon>✉️</SocialIcon>
+          Contact us: Luvioband@outlook.com
+        </SocialLink>
+
+        <SocialLink
+          href="https://www.instagram.com/luvioband?igsh=MXB3M20xb3Z1MGtrOQ=="
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <SocialIcon>📸</SocialIcon>
+          Follow us on Instagram: @luvioband
+        </SocialLink>
+      </SocialLinksContainer>
     </Container>
   );
 }
