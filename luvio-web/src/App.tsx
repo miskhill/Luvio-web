@@ -125,7 +125,7 @@ function App() {
 
       <BandsContainer>
         <Band color="#e74c3c">NOT INTERESTED</Band>
-        <Band color="#f1c40f">MAYBE I'LL APPROACH</Band>
+        <Band color="#f1c40f">MAYBE, I'LL APPROACH</Band>
         <Band color="#2ecc71">COME SAY HI</Band>
       </BandsContainer>
 
