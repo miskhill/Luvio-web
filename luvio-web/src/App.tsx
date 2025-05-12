@@ -172,7 +172,7 @@ function App() {
           rel="noopener noreferrer"
         >
           <SocialIcon>📸</SocialIcon>
-          Follow us on Instagram: @luvioband
+          Follow us on Insta: @luvioband
         </SocialLink>
       </SocialLinksContainer>
     </Container>
