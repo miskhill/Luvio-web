@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import logoImage from "./images/Screenshot 2025-05-12 at 10.39.53.png";
 
 const Container = styled.div`
   display: flex;
@@ -23,8 +24,15 @@ const Logo = styled.h1`
 
 const Tagline = styled.h2`
   font-size: 2rem;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   font-weight: 500;
+`;
+
+const LogoImage = styled.img`
+  max-width: 80%;
+  height: auto;
+  margin-bottom: 3rem;
+  border-radius: 8px;
 `;
 
 const BandsContainer = styled.div`
@@ -122,10 +130,11 @@ function App() {
     <Container>
       <Logo>LUVIO</Logo>
       <Tagline>The Wristband That Speaks Before You Do</Tagline>
+      <LogoImage src={logoImage} alt="Luvio Wristbands" />
 
       <BandsContainer>
         <Band color="#e74c3c">NOT INTERESTED</Band>
-        <Band color="#f1c40f">MAYBE, I'LL APPROACH</Band>
+        <Band color="#f1c40f">MAYBE I'LL APPROACH</Band>
         <Band color="#2ecc71">COME SAY HI</Band>
       </BandsContainer>
 
