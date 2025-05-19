@@ -17,7 +17,7 @@ const Container = styled.div`
 `;
 
 const LogoImageMain = styled.img`
-  width: 420px;
+  width: 525px;
   max-width: 90vw;
   height: auto;
   margin: 2rem auto 2.5rem auto;
