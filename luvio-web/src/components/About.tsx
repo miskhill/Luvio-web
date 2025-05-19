@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import aboutImage from "../images/783c5782-8d4d-4ea3-aee3-48615623eeb2.jpeg";
 
 const AboutContainer = styled.div`
   max-width: 800px;
@@ -65,10 +66,21 @@ const Belief = styled.p`
   margin-bottom: 1rem;
 `;
 
+const AboutImage = styled.img`
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 12px;
+  margin: 2rem auto;
+  display: block;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+`;
+
 const About = () => {
   return (
     <AboutContainer>
       <Title>🌐 About Luvio</Title>
+      <AboutImage src={aboutImage} alt="Luvio Wristbands" />
 
       <Section>
         <Paragraph>
