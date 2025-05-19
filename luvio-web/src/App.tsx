@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import logoImageMain from "./images/Luvio logo.jpeg";
+import logoImageMain from "./images/Luvio logo2.jpeg";
 import logoImage from "./images/Screenshot 2025-05-12 at 10.39.53.png";
 import About from "./components/About";
 
