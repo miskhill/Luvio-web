@@ -180,13 +180,15 @@ const Tab = styled.button<{ active: boolean }>`
 `;
 
 const LogoTagline = styled.div`
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: #e9e2c8;
   margin-top: 0.5rem;
   margin-bottom: 2rem;
   text-align: center;
   letter-spacing: 0.02em;
   font-weight: 500;
+  max-width: 7.5em;
+  display: inline-block;
 `;
 
 function App() {
