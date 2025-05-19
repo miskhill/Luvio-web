@@ -183,7 +183,7 @@ function App() {
           <Subheading>Let your band do the talking.</Subheading>
 
           <Info>
-            Buy a LUVIO band for just £1 and wear it at clubs and pubs to signal
+            Buy a LUVIO band for just £2 and wear it at clubs and pubs to signal
             your vibe:
           </Info>
 
