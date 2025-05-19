@@ -67,8 +67,8 @@ const Belief = styled.p`
 `;
 
 const AboutImage = styled.img`
-  width: 100%;
-  max-width: 600px;
+  width: 50%;
+  max-width: 300px;
   height: auto;
   border-radius: 12px;
   margin: 2rem auto;
