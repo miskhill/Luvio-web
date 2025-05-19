@@ -18,9 +18,39 @@ const Container = styled.div`
 const Logo = styled.h1`
   font-size: 5rem;
   margin-bottom: 0.5rem;
-  color: #e84118; /* Red-orange color for LUVIO */
   font-weight: bold;
   letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2em;
+`;
+
+const LogoLetter = styled.span<{ color?: string }>`
+  color: ${(props) => props.color || "#e9e2c8"};
+`;
+
+const LogoO = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2em;
+  height: 1.2em;
+  background: #e9e2c8;
+  border-radius: 50%;
+  position: relative;
+  margin-left: 0.1em;
+  margin-right: 0.1em;
+  font-size: 0.9em;
+`;
+
+const Heart = styled.span`
+  color: #111;
+  font-size: 0.7em;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const Tagline = styled.h2`
@@ -149,12 +179,31 @@ const Tab = styled.button<{ active: boolean }>`
   }
 `;
 
+const LogoTagline = styled.div`
+  font-size: 1.5rem;
+  color: #e9e2c8;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+`;
+
 function App() {
   const [activeTab, setActiveTab] = useState<"home" | "about">("home");
 
   return (
     <Container>
-      <Logo>LUVIO</Logo>
+      <Logo>
+        <LogoLetter>L</LogoLetter>
+        <LogoLetter color="#e74c3c">U</LogoLetter>
+        <LogoLetter color="#f1c40f">V</LogoLetter>
+        <LogoLetter color="#2ecc71">I</LogoLetter>
+        <LogoO>
+          <Heart>♡</Heart>
+        </LogoO>
+      </Logo>
+      <LogoTagline>Connection. Consent. Community.</LogoTagline>
       <Tagline>The Wristband That Speaks Before You Do</Tagline>
 
       <TabContainer>
