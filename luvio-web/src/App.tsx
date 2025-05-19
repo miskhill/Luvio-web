@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import logoImageMain from "./images/Luvio logo.jpeg";
 import logoImage from "./images/Screenshot 2025-05-12 at 10.39.53.png";
 import About from "./components/About";
 
@@ -15,49 +16,12 @@ const Container = styled.div`
   text-align: center;
 `;
 
-const LOGO_WIDTH = "8.5em";
-
-const LogoBlock = styled.div`
-  width: ${LOGO_WIDTH};
-  margin: 0 auto 0.5rem auto;
-`;
-
-const Logo = styled.h1`
-  font-size: 5rem;
-  margin-bottom: 0;
-  font-weight: bold;
-  letter-spacing: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.1em;
-`;
-
-const LogoLetter = styled.span<{ color?: string }>`
-  color: ${(props) => props.color || "#e9e2c8"};
-`;
-
-const LogoO = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.2em;
-  height: 1.2em;
-  background: #e9e2c8;
-  border-radius: 50%;
-  position: relative;
-  margin-left: 0.1em;
-  margin-right: 0.1em;
-  font-size: 0.9em;
-`;
-
-const Heart = styled.span`
-  color: #111;
-  font-size: 0.7em;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+const LogoImageMain = styled.img`
+  width: 420px;
+  max-width: 90vw;
+  height: auto;
+  margin: 2rem auto 2.5rem auto;
+  display: block;
 `;
 
 const Tagline = styled.h2`
@@ -186,35 +150,12 @@ const Tab = styled.button<{ active: boolean }>`
   }
 `;
 
-const LogoTagline = styled.div`
-  font-size: 1.1rem;
-  color: #e9e2c8;
-  margin-top: 0.5rem;
-  margin-bottom: 2rem;
-  text-align: left;
-  letter-spacing: 0.02em;
-  font-weight: 500;
-  width: 100%;
-  white-space: nowrap;
-`;
-
 function App() {
   const [activeTab, setActiveTab] = useState<"home" | "about">("home");
 
   return (
     <Container>
-      <LogoBlock>
-        <Logo>
-          <LogoLetter>L</LogoLetter>
-          <LogoLetter color="#e74c3c">U</LogoLetter>
-          <LogoLetter color="#f1c40f">V</LogoLetter>
-          <LogoLetter color="#2ecc71">I</LogoLetter>
-          <LogoO>
-            <Heart>♡</Heart>
-          </LogoO>
-        </Logo>
-        <LogoTagline>Connection. Consent. Community.</LogoTagline>
-      </LogoBlock>
+      <LogoImageMain src={logoImageMain} alt="Luvio Logo" />
       <Tagline>The Wristband That Speaks Before You Do</Tagline>
 
       <TabContainer>
