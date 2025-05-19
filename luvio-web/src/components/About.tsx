@@ -27,8 +27,13 @@ const Paragraph = styled.p`
 const ColorCode = styled.div`
   display: flex;
   align-items: center;
-  margin: 1rem 0;
+  justify-content: center;
+  margin: 1rem auto;
   gap: 1rem;
+  max-width: 400px;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
 `;
 
 const ColorDot = styled.div<{ color: string }>`
@@ -36,6 +41,12 @@ const ColorDot = styled.div<{ color: string }>`
   height: 20px;
   border-radius: 50%;
   background-color: ${(props) => props.color};
+  flex-shrink: 0;
+`;
+
+const ColorText = styled.span`
+  font-size: 1.1rem;
+  color: #e9e2c8;
 `;
 
 const VisionSection = styled.div`
@@ -88,15 +99,15 @@ const About = () => {
 
         <ColorCode>
           <ColorDot color="#e74c3c" />
-          <span>Red: Taken / Not interested</span>
+          <ColorText>Red: Taken / Not interested</ColorText>
         </ColorCode>
         <ColorCode>
           <ColorDot color="#f1c40f" />
-          <span>Yellow: I'll make the first move</span>
+          <ColorText>Yellow: I'll make the first move</ColorText>
         </ColorCode>
         <ColorCode>
           <ColorDot color="#2ecc71" />
-          <span>Green: Open to talk! Come say hi</span>
+          <ColorText>Green: Open to talk! Come say hi</ColorText>
         </ColorCode>
       </Section>
 
