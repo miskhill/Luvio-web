@@ -188,7 +188,10 @@ const LogoTagline = styled.div`
   letter-spacing: 0.02em;
   font-weight: 500;
   max-width: 7.5em;
-  display: inline-block;
+  white-space: nowrap;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 function App() {
