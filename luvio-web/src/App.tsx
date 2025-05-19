@@ -15,14 +15,21 @@ const Container = styled.div`
   text-align: center;
 `;
 
+const LOGO_WIDTH = "8.5em";
+
+const LogoBlock = styled.div`
+  width: ${LOGO_WIDTH};
+  margin: 0 auto 0.5rem auto;
+`;
+
 const Logo = styled.h1`
   font-size: 5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   font-weight: bold;
   letter-spacing: 2px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.1em;
 `;
 
@@ -184,14 +191,11 @@ const LogoTagline = styled.div`
   color: #e9e2c8;
   margin-top: 0.5rem;
   margin-bottom: 2rem;
-  text-align: center;
+  text-align: left;
   letter-spacing: 0.02em;
   font-weight: 500;
-  max-width: 7.5em;
+  width: 100%;
   white-space: nowrap;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
 `;
 
 function App() {
@@ -199,16 +203,18 @@ function App() {
 
   return (
     <Container>
-      <Logo>
-        <LogoLetter>L</LogoLetter>
-        <LogoLetter color="#e74c3c">U</LogoLetter>
-        <LogoLetter color="#f1c40f">V</LogoLetter>
-        <LogoLetter color="#2ecc71">I</LogoLetter>
-        <LogoO>
-          <Heart>♡</Heart>
-        </LogoO>
-      </Logo>
-      <LogoTagline>Connection. Consent. Community.</LogoTagline>
+      <LogoBlock>
+        <Logo>
+          <LogoLetter>L</LogoLetter>
+          <LogoLetter color="#e74c3c">U</LogoLetter>
+          <LogoLetter color="#f1c40f">V</LogoLetter>
+          <LogoLetter color="#2ecc71">I</LogoLetter>
+          <LogoO>
+            <Heart>♡</Heart>
+          </LogoO>
+        </Logo>
+        <LogoTagline>Connection. Consent. Community.</LogoTagline>
+      </LogoBlock>
       <Tagline>The Wristband That Speaks Before You Do</Tagline>
 
       <TabContainer>
