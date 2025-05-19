@@ -23,7 +23,7 @@ const Logo = styled.h1`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.2em;
+  gap: 0.1em;
 `;
 
 const LogoLetter = styled.span<{ color?: string }>`
