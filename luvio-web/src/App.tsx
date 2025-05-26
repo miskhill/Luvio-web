@@ -3,6 +3,7 @@ import styled from "styled-components";
 import logoImageMain from "./images/Luvio logo2.jpeg";
 import logoImage from "./images/Screenshot 2025-05-12 at 10.39.53.png";
 import About from "./components/About";
+import EventRequestForm from "./components/EventRequestForm";
 
 const Container = styled.div`
   display: flex;
@@ -151,7 +152,9 @@ const Tab = styled.button<{ active: boolean }>`
 `;
 
 function App() {
-  const [activeTab, setActiveTab] = useState<"home" | "about">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "about" | "request">(
+    "home"
+  );
 
   return (
     <Container>
@@ -167,6 +170,12 @@ function App() {
           onClick={() => setActiveTab("about")}
         >
           About Us
+        </Tab>
+        <Tab
+          active={activeTab === "request"}
+          onClick={() => setActiveTab("request")}
+        >
+          Event Request
         </Tab>
       </TabContainer>
 
@@ -227,8 +236,10 @@ function App() {
             </SocialLink>
           </SocialLinksContainer>
         </>
-      ) : (
+      ) : activeTab === "about" ? (
         <About />
+      ) : (
+        <EventRequestForm />
       )}
     </Container>
   );
