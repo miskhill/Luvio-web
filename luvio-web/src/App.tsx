@@ -210,7 +210,7 @@ function App() {
             Feel free to come say hello.
           </BandInfo>
 
-          <Price>Available at the bar for just £2</Price>
+          <Price>Available to buy online or at your next Luvio event</Price>
 
           <Footer>
             Join the vibe. Wear your color. Find your people.
