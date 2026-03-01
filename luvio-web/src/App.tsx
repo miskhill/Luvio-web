@@ -1,9 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import styled from "styled-components";
 import logoImageMain from "./images/Luvio logo2.jpeg";
 import logoImage from "./images/Screenshot 2025-05-12 at 10.39.53.png";
 import About from "./components/About";
 import EventRequestForm from "./components/EventRequestForm";
+import Shop from "./components/Shop";
+
+// Create a context for navigation
+type TabType = "home" | "about" | "request" | "shop";
+interface NavigationContextType {
+  activeTab: TabType;
+  navigateTo: (tab: TabType) => void;
+}
+
+export const NavigationContext = createContext<NavigationContextType>({
+  activeTab: "home",
+  navigateTo: () => {}
+});
+
+// Custom hook to use the navigation context
+export const useNavigation = () => useContext(NavigationContext);
 
 const Container = styled.div`
   display: flex;
@@ -135,10 +151,10 @@ const TabContainer = styled.div`
   margin-bottom: 2rem;
 `;
 
-const Tab = styled.button<{ active: boolean }>`
+const Tab = styled.button<{ $active: boolean }>`
   padding: 10px 20px;
   font-size: 1.2rem;
-  background-color: ${(props) => (props.active ? "#e84118" : "transparent")};
+  background-color: ${(props) => (props.$active ? "#e84118" : "transparent")};
   color: #e9e2c8;
   border: 2px solid #e84118;
   border-radius: 20px;
@@ -147,35 +163,55 @@ const Tab = styled.button<{ active: boolean }>`
 
   &:hover {
     background-color: ${(props) =>
-      props.active ? "#e84118" : "rgba(232, 65, 24, 0.2)"};
+      props.$active ? "#e84118" : "rgba(232, 65, 24, 0.2)"};
   }
 `;
 
 function App() {
-  const [activeTab, setActiveTab] = useState<"home" | "about" | "request">(
-    "home"
-  );
+  const [activeTab, setActiveTab] = useState<TabType>("home");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkoutState = params.get("checkout");
+    const paymentState = params.get("payment");
+    const isCheckoutReturn = Boolean(checkoutState || paymentState);
+
+    if (isCheckoutReturn) {
+      setActiveTab("shop");
+    }
+  }, []);
+  
+  const navigateTo = (tab: TabType) => {
+    setActiveTab(tab);
+  };
 
   return (
-    <Container>
+    <NavigationContext.Provider value={{ activeTab, navigateTo }}>
+      <Container>
       <LogoImageMain src={logoImageMain} alt="Luvio Logo" />
       <Tagline>The Wristband That Speaks Before You Do</Tagline>
 
       <TabContainer>
-        <Tab active={activeTab === "home"} onClick={() => setActiveTab("home")}>
+        <Tab $active={activeTab === "home"} onClick={() => setActiveTab("home")}>
           Home
         </Tab>
         <Tab
-          active={activeTab === "about"}
+          $active={activeTab === "about"}
           onClick={() => setActiveTab("about")}
         >
           About Us
         </Tab>
         <Tab
-          active={activeTab === "request"}
+          $active={activeTab === "request"}
           onClick={() => setActiveTab("request")}
         >
           Event Request
+        </Tab>
+        <Tab
+          $active={activeTab === "shop"}
+          onClick={() => setActiveTab("shop")}
+        >
+          Shop
         </Tab>
       </TabContainer>
 
@@ -238,10 +274,13 @@ function App() {
         </>
       ) : activeTab === "about" ? (
         <About />
-      ) : (
+      ) : activeTab === "request" ? (
         <EventRequestForm />
+      ) : (
+        <Shop />
       )}
     </Container>
+    </NavigationContext.Provider>
   );
 }
 
