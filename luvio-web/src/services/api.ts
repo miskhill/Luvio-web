@@ -34,10 +34,15 @@ export interface CheckoutSessionStatusResponse {
 
 class ApiService {
   private baseUrl: string;
+  private buildUrl(path: string): string {
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${this.baseUrl}${normalizedPath}`;
+  }
 
   constructor() {
     // Use Railway URL in production, localhost in development
-    this.baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+    const rawBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+    this.baseUrl = rawBaseUrl.replace(/\/+$/, '');
   }
 
   /**
@@ -49,7 +54,7 @@ class ApiService {
     cancelUrl?: string,
     metadata: Record<string, string> = {}
   ): Promise<CheckoutSessionResponse> {
-    const response = await fetch(`${this.baseUrl}/api/stripe/create-checkout-session`, {
+    const response = await fetch(this.buildUrl('/api/stripe/create-checkout-session'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +81,7 @@ class ApiService {
    * Get payment status from backend
    */
   async getPaymentStatus(paymentIntentId: string): Promise<PaymentStatusResponse> {
-    const response = await fetch(`${this.baseUrl}/api/stripe/payment-status/${paymentIntentId}`);
+    const response = await fetch(this.buildUrl(`/api/stripe/payment-status/${paymentIntentId}`));
 
     if (!response.ok) {
       const error = await response.json();
@@ -90,7 +95,7 @@ class ApiService {
    * Get checkout session status from backend
    */
   async getCheckoutSessionStatus(sessionId: string): Promise<CheckoutSessionStatusResponse> {
-    const response = await fetch(`${this.baseUrl}/api/stripe/checkout-session/${sessionId}`);
+    const response = await fetch(this.buildUrl(`/api/stripe/checkout-session/${sessionId}`));
 
     if (!response.ok) {
       const error = await response.json();
