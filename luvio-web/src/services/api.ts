@@ -11,6 +11,7 @@ export interface ShopProduct {
   id: string;
   name: string;
   color: string;
+  imageUrl: string | null;
   description: string;
   price: number;
   currency: string;

@@ -46,11 +46,26 @@ const ProductCard = styled.div`
   }
 `;
 
-const ProductImage = styled.div<{ color: string }>`
-  height: 100px;
-  background-color: ${(props) => props.color};
+const ProductMedia = styled.div`
+  height: 210px;
+  background: #161313;
   border-radius: 8px;
   margin-bottom: 1rem;
+  overflow: hidden;
+`;
+
+const ProductImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+`;
+
+const ProductImageFallback = styled.div<{ color: string }>`
+  width: 100%;
+  height: 100%;
+  background: ${(props) => props.color};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -647,7 +662,15 @@ const Shop = () => {
             <ProductGrid>
               {products.map(product => (
                 <ProductCard key={product.id}>
-                  <ProductImage color={product.color}>{product.name}</ProductImage>
+                  <ProductMedia>
+                    {product.imageUrl ? (
+                      <ProductImage src={product.imageUrl} alt={product.name} />
+                    ) : (
+                      <ProductImageFallback color={product.color}>
+                        {product.name}
+                      </ProductImageFallback>
+                    )}
+                  </ProductMedia>
                   <ProductTitle>{product.name}</ProductTitle>
                   <ProductPrice>{formatCurrency(product.price)}</ProductPrice>
                   <ProductDescription>{product.description}</ProductDescription>
