@@ -7,6 +7,30 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface ShopProduct {
+  id: string;
+  name: string;
+  color: string;
+  description: string;
+  price: number;
+  currency: string;
+}
+
+export interface ShopShippingSummary {
+  id: string;
+  displayName: string;
+  amount: number;
+  currency: string;
+}
+
+export interface ShopCatalogResponse {
+  pricingSource: 'stripe' | 'static';
+  products: ShopProduct[];
+  shippingOptions: ShopShippingSummary[];
+  checkoutEnabled: boolean;
+  checkoutDisabledReason: string | null;
+}
+
 
 
 export interface CheckoutSessionResponse {
@@ -75,6 +99,16 @@ class ApiService {
     return response.json();
   }
 
+  async getCatalog(): Promise<ShopCatalogResponse> {
+    const response = await fetch(this.buildUrl('/api/stripe/catalog'));
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to load shop catalog');
+    }
+
+    return response.json();
+  }
 
 
   /**

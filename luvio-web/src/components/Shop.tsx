@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { isStripeConfigured, formatCurrency } from "../utils/stripe";
 import StripeHostedCheckout from "./StripeHostedCheckout";
-import { apiService, CheckoutSessionStatusResponse } from "../services/api";
+import {
+  apiService,
+  CartItem as ShopCartItem,
+  CheckoutSessionStatusResponse,
+  ShopProduct,
+  ShopShippingSummary,
+} from "../services/api";
 
 const ShopContainer = styled.div`
   max-width: 800px;
@@ -194,6 +200,16 @@ const CartTotalPrice = styled.span`
   color: #e84118;
 `;
 
+const CartNote = styled.p`
+  margin: 0.75rem 0 0;
+  color: #999;
+  line-height: 1.4;
+`;
+
+const CartWarning = styled(CartNote)`
+  color: #e74c3c;
+`;
+
 const RemoveButton = styled.button`
   background: none;
   border: none;
@@ -252,6 +268,14 @@ const PaymentFormContainer = styled.div`
   border-radius: 8px;
   padding: 2rem;
   margin-top: 2rem;
+`;
+
+const CatalogStateCard = styled.div`
+  background-color: #333;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  color: #e9e2c8;
 `;
 
 const StatusCard = styled.div`
@@ -324,50 +348,6 @@ const StatusButtonRow = styled.div`
 
 const StatusSecondaryButton = styled(StatusActionButton)``;
 
-// Product data
-const products = [
-  {
-    id: 'red-band',
-    name: 'Red Wristband',
-    color: '#e74c3c',
-    price: 2,
-    description: 'Not looking for a relationship. Please don\'t approach.',
-  },
-  {
-    id: 'yellow-band',
-    name: 'Yellow Wristband',
-    color: '#f1c40f',
-    price: 2,
-    description: 'Might be open..., but I\'ll make the first move.',
-  },
-  {
-    id: 'green-band',
-    name: 'Green Wristband',
-    color: '#2ecc71',
-    price: 2,
-    description: 'Open to connection. Feel free to come say hello.',
-  },
-  {
-    id: 'band-pack',
-    name: 'Luvio Band Pack',
-    color: 'linear-gradient(to right, #e74c3c, #f1c40f, #2ecc71)',
-    price: 5,
-    description: 'Get all three bands at a discounted price!',
-  }
-];
-
-// Real Stripe Checkout Integration
-// The StripeCheckout component handles the actual payment processing
-
-// Cart item type
-interface CartItemType {
-  id: string;
-  name: string;
-  color: string;
-  price: number;
-  quantity: number;
-}
-
 type CheckoutViewState = 'idle' | 'loading' | 'success' | 'cancelled' | 'unverified' | 'error';
 
 function formatCheckoutAmount(amount: number | null, currency: string | null): string {
@@ -384,9 +364,38 @@ function formatCheckoutAmount(amount: number | null, currency: string | null): s
   }
 }
 
+function formatAmountWithCurrency(amount: number, currency: string): string {
+  try {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(amount);
+  } catch {
+    return formatCurrency(amount);
+  }
+}
+
+function formatShippingSummary(shipping: ShopShippingSummary | null): string {
+  if (!shipping) {
+    return 'Postage & packaging will be calculated in Stripe Checkout.';
+  }
+
+  if (shipping.amount === null || !shipping.currency) {
+    return `${shipping.displayName} will be added in Stripe Checkout.`;
+  }
+
+  return `${shipping.displayName}: ${formatAmountWithCurrency(shipping.amount, shipping.currency)} added in Stripe Checkout.`;
+}
+
 // Shop component
 const Shop = () => {
-  const [cart, setCart] = useState<CartItemType[]>([]);
+  const [products, setProducts] = useState<ShopProduct[]>([]);
+  const [cart, setCart] = useState<ShopCartItem[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [shippingSummary, setShippingSummary] = useState<ShopShippingSummary | null>(null);
+  const [checkoutEnabled, setCheckoutEnabled] = useState(true);
+  const [checkoutDisabledReason, setCheckoutDisabledReason] = useState<string | null>(null);
   const [showCheckout, setShowCheckout] = useState(false);
   const [stripeConfigured, setStripeConfigured] = useState(false);
   const [checkoutViewState, setCheckoutViewState] = useState<CheckoutViewState>('idle');
@@ -451,6 +460,36 @@ const Shop = () => {
     };
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    (async () => {
+      try {
+        const catalog = await apiService.getCatalog();
+        if (!isMounted) return;
+
+        setProducts(catalog.products);
+        setShippingSummary(catalog.shippingOptions[0] || null);
+        setCheckoutEnabled(catalog.checkoutEnabled);
+        setCheckoutDisabledReason(catalog.checkoutDisabledReason);
+        setCatalogError(null);
+      } catch (error) {
+        if (!isMounted) return;
+        setCatalogError(error instanceof Error ? error.message : 'Unable to load the shop right now.');
+        setCheckoutEnabled(false);
+        setCheckoutDisabledReason('The shop is temporarily unavailable.');
+      } finally {
+        if (isMounted) {
+          setCatalogLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleContinueShopping = () => {
     const url = new URL(window.location.href);
     url.searchParams.delete('checkout');
@@ -469,7 +508,7 @@ const Shop = () => {
     window.location.href = '/';
   };
   
-  const addToCart = (product: typeof products[0]) => {
+  const addToCart = (product: ShopProduct) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
       
@@ -600,19 +639,25 @@ const Shop = () => {
       
       {!showCheckout ? (
         <>
-          <ProductGrid>
-            {products.map(product => (
-              <ProductCard key={product.id}>
-                <ProductImage color={product.color}>{product.name}</ProductImage>
-                <ProductTitle>{product.name}</ProductTitle>
-                <ProductPrice>{formatCurrency(product.price)}</ProductPrice>
-                <ProductDescription>{product.description}</ProductDescription>
-                <AddToCartButton onClick={() => addToCart(product)}>
-                  Add to Cart
-                </AddToCartButton>
-              </ProductCard>
-            ))}
-          </ProductGrid>
+          {catalogLoading ? (
+            <CatalogStateCard>Loading current prices from the shop...</CatalogStateCard>
+          ) : catalogError ? (
+            <CatalogStateCard>{catalogError}</CatalogStateCard>
+          ) : (
+            <ProductGrid>
+              {products.map(product => (
+                <ProductCard key={product.id}>
+                  <ProductImage color={product.color}>{product.name}</ProductImage>
+                  <ProductTitle>{product.name}</ProductTitle>
+                  <ProductPrice>{formatCurrency(product.price)}</ProductPrice>
+                  <ProductDescription>{product.description}</ProductDescription>
+                  <AddToCartButton onClick={() => addToCart(product)}>
+                    Add to Cart
+                  </AddToCartButton>
+                </ProductCard>
+              ))}
+            </ProductGrid>
+          )}
           
           <CartSection>
             <CartTitle>Your Cart</CartTitle>
@@ -649,8 +694,12 @@ const Shop = () => {
                   <CartTotalText>Total</CartTotalText>
                   <CartTotalPrice>{formatCurrency(cartTotal)}</CartTotalPrice>
                 </CartTotal>
+
+                <CartNote>{formatShippingSummary(shippingSummary)}</CartNote>
                 
-                <CheckoutButton onClick={() => setShowCheckout(true)}>
+                {checkoutDisabledReason && <CartWarning>{checkoutDisabledReason}</CartWarning>}
+
+                <CheckoutButton onClick={() => setShowCheckout(true)} disabled={!checkoutEnabled}>
                   Proceed to Checkout
                 </CheckoutButton>
               </>
@@ -691,12 +740,16 @@ const Shop = () => {
               <CartTotalText>Total</CartTotalText>
               <CartTotalPrice>{formatCurrency(cartTotal)}</CartTotalPrice>
             </CartTotal>
+
+            <CartNote>{formatShippingSummary(shippingSummary)}</CartNote>
             
-            {stripeConfigured ? (
-              <StripeHostedCheckout cartItems={cart} total={cartTotal} />
+            {checkoutDisabledReason && <CartWarning>{checkoutDisabledReason}</CartWarning>}
+            
+            {stripeConfigured && checkoutEnabled ? (
+              <StripeHostedCheckout cartItems={cart} total={cartTotal} shippingSummary={shippingSummary} />
             ) : (
               <div style={{ color: '#e74c3c', padding: '1rem', textAlign: 'center' }}>
-                Stripe is not configured. Please add your Stripe publishable key to the .env file.
+                {checkoutDisabledReason || 'Stripe is not configured. Please add your Stripe publishable key to the .env file.'}
               </div>
             )}
           </PaymentFormContainer>

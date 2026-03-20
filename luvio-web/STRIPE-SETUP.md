@@ -1,79 +1,93 @@
 # Stripe Integration Setup for Luvio Web
 
-This document provides instructions on how to set up and configure the Stripe payment integration for the Luvio website.
+This document is the source of truth for Stripe setup in this project.
 
-## Prerequisites
+## Architecture
 
-1. A Stripe account (create one at [stripe.com](https://stripe.com) if you don't have one)
-2. API keys from your Stripe dashboard
+- Frontend (Netlify) only uses the Stripe publishable key and the backend API URL.
+- Backend (Railway/server) uses the Stripe secret key and creates Checkout Sessions.
+- Never expose `STRIPE_SECRET_KEY` in frontend env vars or client code.
 
-## Setup Instructions
+## Environment Variables
 
-### 1. Create a .env file
+### Frontend (Netlify / CRA build env)
 
-Create a `.env` file in the root of your project (the `luvio-web` directory). You can copy the contents from the `.env.example` file that has been created for you.
+Required:
 
-```bash
-cp .env.example .env
+```env
+REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_live_or_pk_test_...
+REACT_APP_API_URL=https://your-backend-domain
 ```
 
-### 2. Add your Stripe API keys
+Notes:
 
-Open the `.env` file and replace the placeholder values with your actual Stripe API keys:
+- Variable names must start with `REACT_APP_` to be available in CRA frontend code.
+- `STRIPE_PUBLISHABLE_KEY` (without `REACT_APP_`) will not be read by the app.
 
+### Backend (Railway/server env)
+
+Required:
+
+```env
+STRIPE_SECRET_KEY=sk_live_or_sk_test_...
 ```
-REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_your_actual_publishable_key
+
+Optional but recommended:
+
+```env
+STRIPE_WEBHOOK_SECRET=whsec_...
 ```
 
-You can find these keys in your Stripe Dashboard under Developers > API keys.
+## Test Mode vs Live Mode
 
-**Important**: 
-- Use test keys for development
-- Use live keys only in production
-- Only expose the publishable key in frontend env vars (`REACT_APP_*`)
-- Keep `STRIPE_SECRET_KEY` on the backend only (never in frontend env vars)
-- Never commit your `.env` file to version control (it's already in `.gitignore`)
+- Test mode uses `pk_test` + `sk_test`.
+- Live mode uses `pk_live` + `sk_live`.
+- Modes must match across frontend and backend environments.
 
-### 3. Test Mode vs. Live Mode
+Quick checks:
 
-During development and testing, use Stripe's test mode keys. This allows you to simulate payments without actual charges.
+- Checkout session IDs prefixed with `cs_test_` indicate test mode.
+- Checkout session IDs prefixed with `cs_live_` indicate live mode.
 
-For test mode:
-- Use the test API keys from your Stripe dashboard
-- Use Stripe's test card numbers for testing:
-  - `4242 4242 4242 4242` (Visa, successful payment)
-  - `4000 0000 0000 0002` (Visa, declined payment)
-  - Expiry date: Any future date
-  - CVC: Any 3 digits
-  - ZIP: Any 5 digits
+### Common Error and Cause
 
-### 4. Backend Requirements
+Error:
 
-Production payments require a backend that talks to Stripe using the secret key:
+`Your card was declined. Your request was in test mode, but used a non test card.`
 
-1. Create a server endpoint to create Checkout Sessions
-2. Verify payment status server-side (or via webhooks) before fulfilling orders
-3. Store order information in a database
+Cause:
 
-## Usage
+- Backend is still using `sk_test` while a real card is being used.
 
-The Shop tab in the Luvio website now allows users to:
+Fix:
 
-1. Browse available wristbands
-2. Add items to their cart
-3. Proceed to checkout
-4. Enter shipping and payment information
-5. Complete their purchase securely
+1. Update backend `STRIPE_SECRET_KEY` to `sk_live`.
+2. Redeploy/restart backend.
+3. Verify frontend `REACT_APP_API_URL` points to that backend.
 
-## Troubleshooting
+## Checkout Flow Requirements
 
-If you encounter issues with the Stripe integration:
+1. Backend endpoint creates Checkout Session (`/api/stripe/create-checkout-session`).
+2. Success URL must include `session_id={CHECKOUT_SESSION_ID}`.
+3. Frontend verifies checkout result with backend before showing paid confirmation.
+4. Backend must compute final pricing server-side (do not trust client-submitted prices).
 
-1. Check that your API keys are correctly set in the `.env` file
-2. Ensure the `.env` file is in the correct location
-3. Restart the development server after making changes to environment variables
-4. Check the browser console for any error messages
-5. Verify that you're using the correct test card numbers during testing
+## Production Go-Live Checklist
+
+1. Netlify env vars set: `REACT_APP_STRIPE_PUBLISHABLE_KEY`, `REACT_APP_API_URL`.
+2. Netlify does not contain `STRIPE_SECRET_KEY` (unless using Netlify Functions for Stripe).
+3. Railway/backend env var set: `STRIPE_SECRET_KEY=sk_live_...`.
+4. Backend redeployed after env changes.
+5. Frontend redeployed after env changes.
+6. Complete one real low-value test purchase and verify:
+   - Stripe dashboard shows live payment.
+   - App success screen shows session reference.
+   - Backend order fulfillment path is triggered.
+
+## Security Notes
+
+- `.env` files must stay gitignored.
+- If a secret key is ever shared in chat, logs, screenshots, or commits, rotate it immediately in Stripe and update backend env vars.
 
 ## Resources
 

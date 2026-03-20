@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { apiService, CartItem } from '../services/api';
+import { apiService, CartItem, ShopShippingSummary } from '../services/api';
 
 // Styled components
 const CheckoutButton = styled.button<{ disabled?: boolean }>`
@@ -62,9 +62,30 @@ const SecurityIcon = styled.span`
 interface StripeHostedCheckoutProps {
   cartItems: CartItem[];
   total: number;
+  shippingSummary: ShopShippingSummary | null;
 }
 
-const StripeHostedCheckout: React.FC<StripeHostedCheckoutProps> = ({ cartItems, total }) => {
+function getCheckoutLabel(total: number, shippingSummary: ShopShippingSummary | null): string {
+  if (!shippingSummary || shippingSummary.amount === null) {
+    return `Checkout Securely - £${total.toFixed(2)} plus shipping`;
+  }
+
+  return `Checkout Securely - £${total.toFixed(2)} plus ${shippingSummary.displayName}`;
+}
+
+function getShippingNote(shippingSummary: ShopShippingSummary | null): string {
+  if (!shippingSummary) {
+    return 'Postage & packaging will be calculated in Stripe Checkout.';
+  }
+
+  if (shippingSummary.amount === null || !shippingSummary.currency) {
+    return `${shippingSummary.displayName} will be added in Stripe Checkout.`;
+  }
+
+  return `${shippingSummary.displayName} will be added in Stripe Checkout before payment confirmation.`;
+}
+
+const StripeHostedCheckout: React.FC<StripeHostedCheckoutProps> = ({ cartItems, total, shippingSummary }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,14 +116,14 @@ const StripeHostedCheckout: React.FC<StripeHostedCheckoutProps> = ({ cartItems, 
     <div>
       <CheckoutButton onClick={handleCheckout} disabled={loading}>
         {loading && <LoadingSpinner />}
-        {loading ? 'Redirecting to Stripe...' : `Checkout Securely - £${total.toFixed(2)}`}
+        {loading ? 'Redirecting to Stripe...' : getCheckoutLabel(total, shippingSummary)}
       </CheckoutButton>
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
 
       <SecurityNote>
         <SecurityIcon>🔒</SecurityIcon>
-        You'll be redirected to Stripe's secure checkout page to complete your purchase.
+        {getShippingNote(shippingSummary)}
       </SecurityNote>
     </div>
   );
