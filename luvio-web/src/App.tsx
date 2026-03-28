@@ -149,6 +149,13 @@ const TabContainer = styled.div`
   justify-content: center;
   gap: 20px;
   margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    width: min(100%, 28rem);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
 `;
 
 const Tab = styled.button<{ $active: boolean }>`
@@ -164,6 +171,15 @@ const Tab = styled.button<{ $active: boolean }>`
   &:hover {
     background-color: ${(props) =>
       props.$active ? "#e84118" : "rgba(232, 65, 24, 0.2)"};
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 14px;
+    font-size: 1rem;
+    line-height: 1.2;
+    white-space: normal;
   }
 `;
 
