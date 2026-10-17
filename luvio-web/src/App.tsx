@@ -5,9 +5,10 @@ import logoImage from "./images/Screenshot 2025-05-12 at 10.39.53.png";
 import About from "./components/About";
 import EventRequestForm from "./components/EventRequestForm";
 import Shop from "./components/Shop";
+import { CharityHomeCard, CharityPage } from "./components/CharityImpact";
 
 // Create a context for navigation
-type TabType = "home" | "about" | "request" | "shop";
+export type TabType = "home" | "about" | "request" | "shop" | "charity";
 interface NavigationContextType {
   activeTab: TabType;
   navigateTo: (tab: TabType) => void;
@@ -39,12 +40,22 @@ const LogoImageMain = styled.img`
   height: auto;
   margin: 2rem auto 2.5rem auto;
   display: block;
+
+  @media (max-width: 480px) {
+    margin: 1rem auto 1.5rem;
+  }
 `;
 
 const Tagline = styled.h2`
   font-size: 2rem;
   margin-bottom: 1.5rem;
   font-weight: 500;
+
+  @media (max-width: 480px) {
+    font-size: 1.55rem;
+    line-height: 1.35;
+    margin-bottom: 1.25rem;
+  }
 `;
 
 const LogoImage = styled.img`
@@ -156,6 +167,11 @@ const TabContainer = styled.div`
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
   }
+
+  @media (max-width: 480px) {
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const Tab = styled.button<{ $active: boolean }>`
@@ -181,24 +197,48 @@ const Tab = styled.button<{ $active: boolean }>`
     line-height: 1.2;
     white-space: normal;
   }
+
+  @media (max-width: 480px) {
+    padding: 11px 8px;
+
+    &:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc(50% - 5px);
+    }
+  }
 `;
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabType>("home");
+  const [activeTab, setActiveTab] = useState<TabType>(() =>
+    window.location.pathname.replace(/\/$/, "") === "/charity" ? "charity" : "home"
+  );
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const checkoutState = params.get("checkout");
-    const paymentState = params.get("payment");
-    const isCheckoutReturn = Boolean(checkoutState || paymentState);
+    const syncTabFromLocation = () => {
+      const params = new URLSearchParams(window.location.search);
+      const isCheckoutReturn = Boolean(params.get("checkout") || params.get("payment"));
+      if (isCheckoutReturn) {
+        setActiveTab("shop");
+      } else {
+        setActiveTab(
+          window.location.pathname.replace(/\/$/, "") === "/charity" ? "charity" : "home"
+        );
+      }
+    };
 
-    if (isCheckoutReturn) {
-      setActiveTab("shop");
-    }
+    syncTabFromLocation();
+    window.addEventListener("popstate", syncTabFromLocation);
+    return () => window.removeEventListener("popstate", syncTabFromLocation);
   }, []);
   
   const navigateTo = (tab: TabType) => {
+    const destination = tab === "charity" ? "/charity" : "/";
+    if (`${window.location.pathname}${window.location.search}` !== destination) {
+      window.history.pushState({}, "", destination);
+    }
     setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -208,32 +248,40 @@ function App() {
       <Tagline>The Wristband That Speaks Before You Do</Tagline>
 
       <TabContainer>
-        <Tab $active={activeTab === "home"} onClick={() => setActiveTab("home")}>
+        <Tab $active={activeTab === "home"} onClick={() => navigateTo("home")}>
           Home
         </Tab>
         <Tab
           $active={activeTab === "about"}
-          onClick={() => setActiveTab("about")}
+          onClick={() => navigateTo("about")}
         >
           About Us
         </Tab>
         <Tab
           $active={activeTab === "request"}
-          onClick={() => setActiveTab("request")}
+          onClick={() => navigateTo("request")}
         >
           Event Request
         </Tab>
         <Tab
           $active={activeTab === "shop"}
-          onClick={() => setActiveTab("shop")}
+          onClick={() => navigateTo("shop")}
         >
           Shop
+        </Tab>
+        <Tab
+          $active={activeTab === "charity"}
+          onClick={() => navigateTo("charity")}
+        >
+          Charity Impact
         </Tab>
       </TabContainer>
 
       {activeTab === "home" ? (
         <>
           <LogoImage src={logoImage} alt="Luvio Wristbands" />
+
+          <CharityHomeCard />
 
           <BandsContainer>
             <Band color="#e74c3c">NOT INTERESTED</Band>
@@ -292,6 +340,8 @@ function App() {
         <About />
       ) : activeTab === "request" ? (
         <EventRequestForm />
+      ) : activeTab === "charity" ? (
+        <CharityPage />
       ) : (
         <Shop />
       )}
