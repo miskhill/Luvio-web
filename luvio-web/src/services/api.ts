@@ -32,6 +32,20 @@ export interface ShopCatalogResponse {
   checkoutDisabledReason: string | null;
 }
 
+export interface CharityDonation {
+  period: string;
+  amountPence: number;
+  paidAt: string;
+}
+
+export interface CharityImpactResponse {
+  totalPledgedPence: number;
+  currency: 'GBP';
+  eligibleBandsSold: number;
+  lastUpdated: string | null;
+  donations: CharityDonation[];
+}
+
 
 
 export interface CheckoutSessionResponse {
@@ -106,6 +120,16 @@ class ApiService {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'Failed to load shop catalog');
+    }
+
+    return response.json();
+  }
+
+  async getCharityImpact(): Promise<CharityImpactResponse> {
+    const response = await fetch(this.buildUrl('/api/stripe/charity-impact'));
+
+    if (!response.ok) {
+      throw new Error('Failed to load the charity total');
     }
 
     return response.json();

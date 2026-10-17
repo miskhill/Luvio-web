@@ -5,9 +5,10 @@ import logoImage from "./images/Screenshot 2025-05-12 at 10.39.53.png";
 import About from "./components/About";
 import EventRequestForm from "./components/EventRequestForm";
 import Shop from "./components/Shop";
+import { CharityHomeCard, CharityPage } from "./components/CharityImpact";
 
 // Create a context for navigation
-type TabType = "home" | "about" | "request" | "shop";
+export type TabType = "home" | "about" | "request" | "shop" | "charity";
 interface NavigationContextType {
   activeTab: TabType;
   navigateTo: (tab: TabType) => void;
@@ -184,21 +185,35 @@ const Tab = styled.button<{ $active: boolean }>`
 `;
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabType>("home");
+  const [activeTab, setActiveTab] = useState<TabType>(() =>
+    window.location.pathname.replace(/\/$/, "") === "/charity" ? "charity" : "home"
+  );
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const checkoutState = params.get("checkout");
-    const paymentState = params.get("payment");
-    const isCheckoutReturn = Boolean(checkoutState || paymentState);
+    const syncTabFromLocation = () => {
+      const params = new URLSearchParams(window.location.search);
+      const isCheckoutReturn = Boolean(params.get("checkout") || params.get("payment"));
+      if (isCheckoutReturn) {
+        setActiveTab("shop");
+      } else {
+        setActiveTab(
+          window.location.pathname.replace(/\/$/, "") === "/charity" ? "charity" : "home"
+        );
+      }
+    };
 
-    if (isCheckoutReturn) {
-      setActiveTab("shop");
-    }
+    syncTabFromLocation();
+    window.addEventListener("popstate", syncTabFromLocation);
+    return () => window.removeEventListener("popstate", syncTabFromLocation);
   }, []);
   
   const navigateTo = (tab: TabType) => {
+    const destination = tab === "charity" ? "/charity" : "/";
+    if (`${window.location.pathname}${window.location.search}` !== destination) {
+      window.history.pushState({}, "", destination);
+    }
     setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -208,32 +223,40 @@ function App() {
       <Tagline>The Wristband That Speaks Before You Do</Tagline>
 
       <TabContainer>
-        <Tab $active={activeTab === "home"} onClick={() => setActiveTab("home")}>
+        <Tab $active={activeTab === "home"} onClick={() => navigateTo("home")}>
           Home
         </Tab>
         <Tab
           $active={activeTab === "about"}
-          onClick={() => setActiveTab("about")}
+          onClick={() => navigateTo("about")}
         >
           About Us
         </Tab>
         <Tab
           $active={activeTab === "request"}
-          onClick={() => setActiveTab("request")}
+          onClick={() => navigateTo("request")}
         >
           Event Request
         </Tab>
         <Tab
           $active={activeTab === "shop"}
-          onClick={() => setActiveTab("shop")}
+          onClick={() => navigateTo("shop")}
         >
           Shop
+        </Tab>
+        <Tab
+          $active={activeTab === "charity"}
+          onClick={() => navigateTo("charity")}
+        >
+          Charity Impact
         </Tab>
       </TabContainer>
 
       {activeTab === "home" ? (
         <>
           <LogoImage src={logoImage} alt="Luvio Wristbands" />
+
+          <CharityHomeCard />
 
           <BandsContainer>
             <Band color="#e74c3c">NOT INTERESTED</Band>
@@ -292,6 +315,8 @@ function App() {
         <About />
       ) : activeTab === "request" ? (
         <EventRequestForm />
+      ) : activeTab === "charity" ? (
+        <CharityPage />
       ) : (
         <Shop />
       )}
