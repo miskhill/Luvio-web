@@ -1,46 +1,78 @@
-# Getting Started with Create React App
+# Luvio website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the React and TypeScript frontend for [luvioband.co.uk](https://luvioband.co.uk/). It was
+bootstrapped with Create React App and is deployed through Netlify.
 
-## Available Scripts
+## Architecture
 
-In the project directory, you can run:
+- `src/App.tsx` owns the existing tab-style navigation.
+- `/charity` is a real browser path backed by the same single-page application. Netlify's catch-all
+  redirect in `netlify.toml` serves the app for direct visits and refreshes.
+- `src/services/api.ts` is the browser's interface to `luvio-server`.
+- The shop loads its catalog and creates Checkout Sessions through the backend. The browser never
+  decides final prices.
+- The charity homepage card and impact page both read `GET /api/stripe/charity-impact`. The
+  frontend formats and presents the response but does not calculate the pledge.
+
+The deployed charity page explains that the total is pledged rather than necessarily transferred,
+that each individual band contributes £1, and that refunds do not reduce the pledge.
+
+## Environment
+
+Copy `.env.example` for local development. The main frontend settings are:
+
+```env
+REACT_APP_API_URL=http://localhost:3001
+REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_...
+```
+
+Never place a Stripe secret key in a frontend environment variable.
+
+## Available scripts
+
+Run these commands from this directory.
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Starts the development server at [http://localhost:3000](http://localhost:3000).
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Starts the test runner. For a single CI-style pass, use:
+
+```bash
+CI=true npm test -- --watchAll=false
+```
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Creates an optimized production build in `build`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Styling rule for future work
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+All new or changed styling must be placed in `.scss` files. Do not add JSX `style` props,
+JavaScript style objects, `styled-components`, or other CSS-in-JS styling.
 
-### `npm run eject`
+The current application contains legacy `styled-components` and inline styles. They do not need a
+standalone refactor now. When future work changes a component's styling, migrate the styles touched
+by that task to a component SCSS file. The first future SCSS change must also add the `sass`
+dependency because it is not currently declared directly by the project.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The repository-level [`AGENTS.md`](../AGENTS.md) contains the authoritative rule for future agents.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Validation
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+For normal changes, run:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+CI=true npm test -- --watchAll=false
+npm run build
+```
 
-## Learn More
+For visible changes, also verify representative desktop and mobile widths. Evidence screenshots
+for the charity counter implementation are stored in `evidence/charity-counter`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Deployment
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Deploy backend changes before frontend changes when an update introduces or changes an API. See
+[`STRIPE-SETUP.md`](./STRIPE-SETUP.md) for the production environment and verification checklist.

@@ -32,7 +32,7 @@ Required:
 STRIPE_SECRET_KEY=sk_live_or_sk_test_...
 ```
 
-Optional but recommended:
+Also required for signed production webhooks:
 
 ```env
 STRIPE_WEBHOOK_SECRET=whsec_...
@@ -72,6 +72,26 @@ Fix:
 3. Frontend verifies checkout result with backend before showing paid confirmation.
 4. Backend must compute final pricing server-side (do not trust client-submitted prices).
 
+## Charity Fundraising Counter
+
+The deployed homepage counter and `/charity` page read the same public backend endpoint:
+
+```text
+GET /api/stripe/charity-impact
+```
+
+The frontend must not calculate or invent a total. It formats the integer-pence response as GBP and
+shows a neutral unavailable state when the request fails.
+
+The backend calculates one eligible contribution per individual band and three per band pack,
+stores that trusted quantity in Stripe Checkout Session metadata, and rebuilds the cumulative total
+from completed, paid Checkout Sessions. Refunds do not reduce the pledge. Completed monthly
+donations are recorded separately by the server and do not reset the cumulative total.
+
+For delayed payment methods, the Stripe webhook should subscribe to
+`checkout.session.async_payment_succeeded` as well as `checkout.session.completed`. See the server
+repository's `STRIPE.md` for the complete event list and operational details.
+
 ## Production Go-Live Checklist
 
 1. Netlify env vars set: `REACT_APP_STRIPE_PUBLISHABLE_KEY`, `REACT_APP_API_URL`.
@@ -82,7 +102,12 @@ Fix:
 6. Complete one real low-value test purchase and verify:
    - Stripe dashboard shows live payment.
    - App success screen shows session reference.
-   - Backend order fulfillment path is triggered.
+   - Stripe webhook delivery to the backend returns `2xx`.
+   - `GET /api/stripe/charity-impact` increases by £1 for each individual band in the order.
+   - A band pack increases the pledge by £3.
+
+The server should be deployed before the frontend so the charity endpoint exists when the website
+starts requesting it.
 
 ## Security Notes
 
