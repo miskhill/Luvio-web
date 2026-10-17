@@ -67,6 +67,11 @@ const Page = styled.main`
   border-radius: 18px;
   background: #222;
   text-align: left;
+
+  @media (max-width: 480px) {
+    padding: 1.25rem;
+    border-radius: 14px;
+  }
 `;
 
 const PageTitle = styled.h1`
@@ -89,6 +94,11 @@ const TotalPanel = styled.div`
   border-left: 5px solid #e84118;
   border-radius: 0 14px 14px 0;
   background: #181818;
+
+  @media (max-width: 480px) {
+    margin: 1.75rem 0;
+    padding: 1.25rem;
+  }
 `;
 
 const SectionTitle = styled.h2`

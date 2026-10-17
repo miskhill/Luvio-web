@@ -40,12 +40,22 @@ const LogoImageMain = styled.img`
   height: auto;
   margin: 2rem auto 2.5rem auto;
   display: block;
+
+  @media (max-width: 480px) {
+    margin: 1rem auto 1.5rem;
+  }
 `;
 
 const Tagline = styled.h2`
   font-size: 2rem;
   margin-bottom: 1.5rem;
   font-weight: 500;
+
+  @media (max-width: 480px) {
+    font-size: 1.55rem;
+    line-height: 1.35;
+    margin-bottom: 1.25rem;
+  }
 `;
 
 const LogoImage = styled.img`
@@ -157,6 +167,11 @@ const TabContainer = styled.div`
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
   }
+
+  @media (max-width: 480px) {
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const Tab = styled.button<{ $active: boolean }>`
@@ -181,6 +196,16 @@ const Tab = styled.button<{ $active: boolean }>`
     font-size: 1rem;
     line-height: 1.2;
     white-space: normal;
+  }
+
+  @media (max-width: 480px) {
+    padding: 11px 8px;
+
+    &:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc(50% - 5px);
+    }
   }
 `;
 
