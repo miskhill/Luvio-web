@@ -1,0 +1,71 @@
+@use "../styles/tokens" as *;
+
+.about-page { padding-bottom: 5rem; }
+.page-intro {
+  padding: clamp(3.5rem, 8vw, 7rem) 0;
+  .page-lead { max-width: 42rem; margin: 1.5rem 0 0; color: $cream-muted; font-size: 1.15rem; line-height: 1.75; }
+}
+
+.about-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+  align-items: center;
+  gap: clamp(2rem, 7vw, 6rem);
+  img { width: 100%; aspect-ratio: 1; border-radius: $radius-large; object-fit: cover; box-shadow: $shadow; }
+}
+
+.about-section {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 7vw, 6rem);
+  padding: clamp(3rem, 7vw, 5.5rem) 0;
+  border-top: 1px solid $border;
+  h2 { max-width: 15ch; margin: 0; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; }
+}
+.about-section__copy {
+  p { margin: 0 0 1.25rem; color: $cream-muted; font-size: 1.05rem; line-height: 1.8; }
+  p:last-child { margin-bottom: 0; }
+}
+
+.about-signals {
+  padding: clamp(2rem, 5vw, 3rem);
+  border-radius: $radius-large;
+  background: $surface;
+  h2 { margin: 0 0 1.5rem; font-size: 1.8rem; }
+}
+.about-signals__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.about-signal {
+  padding: 1.25rem;
+  border-top: 0.4rem solid;
+  border-radius: $radius-small;
+  background: $surface-raised;
+  h3 { margin: 0 0 0.45rem; }
+  strong { font-size: 0.95rem; }
+  p { margin: 0.75rem 0 0; color: $cream-muted; font-size: 0.9rem; line-height: 1.6; }
+}
+.about-signal--red { border-color: $red; }
+.about-signal--yellow { border-color: $yellow; }
+.about-signal--green { border-color: $green; }
+
+.about-cta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(2rem, 6vw, 4rem) 0 0;
+  border-top: 1px solid $border;
+  h2 { margin: 0 0 0.6rem; font-size: clamp(1.8rem, 4vw, 2.7rem); }
+  p { margin: 0; color: $cream-muted; }
+  .button-row { margin: 0; flex: 0 0 auto; }
+}
+
+@media (max-width: 760px) {
+  .about-intro, .about-section { grid-template-columns: 1fr; gap: 2rem; }
+  .about-intro img { width: min(100%, 28rem); }
+  .about-signals__grid { grid-template-columns: 1fr; }
+  .about-cta { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 620px) {
+  .about-cta .button-row { width: 100%; }
+}

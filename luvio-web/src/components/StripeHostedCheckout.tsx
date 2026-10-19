@@ -1,63 +1,6 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { apiService, CartItem, ShopShippingSummary } from '../services/api';
-
-// Styled components
-const CheckoutButton = styled.button<{ disabled?: boolean }>`
-  background-color: ${props => props.disabled ? '#666' : '#e84118'};
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 4px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
-  transition: background-color 0.3s ease;
-  width: 100%;
-  margin-top: 1rem;
-
-  &:hover:not(:disabled) {
-    background-color: #c23616;
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: #e74c3c;
-  background-color: #2c1810;
-  padding: 1rem;
-  border-radius: 4px;
-  margin-top: 1rem;
-`;
-
-const LoadingSpinner = styled.div`
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #e84118;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-right: 10px;
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
-
-const SecurityNote = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: #95a5a6;
-`;
-
-const SecurityIcon = styled.span`
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
-`;
+import React, { useState } from "react";
+import { apiService, CartItem, ShopShippingSummary } from "../services/api";
+import "./StripeHostedCheckout.scss";
 
 interface StripeHostedCheckoutProps {
   cartItems: CartItem[];
@@ -67,22 +10,17 @@ interface StripeHostedCheckoutProps {
 
 function getCheckoutLabel(total: number, shippingSummary: ShopShippingSummary | null): string {
   if (!shippingSummary || shippingSummary.amount === null) {
-    return `Checkout Securely - £${total.toFixed(2)} plus shipping`;
+    return `Continue to Stripe — £${total.toFixed(2)} plus shipping`;
   }
-
-  return `Checkout Securely - £${total.toFixed(2)} plus ${shippingSummary.displayName}`;
+  return `Continue to Stripe — £${total.toFixed(2)} plus ${shippingSummary.displayName}`;
 }
 
 function getShippingNote(shippingSummary: ShopShippingSummary | null): string {
-  if (!shippingSummary) {
-    return 'Postage & packaging will be calculated in Stripe Checkout.';
-  }
-
+  if (!shippingSummary) return "Postage and packaging will be calculated in Stripe Checkout.";
   if (shippingSummary.amount === null || !shippingSummary.currency) {
     return `${shippingSummary.displayName} will be added in Stripe Checkout.`;
   }
-
-  return `${shippingSummary.displayName} will be added in Stripe Checkout before payment confirmation.`;
+  return `${shippingSummary.displayName} will be added before payment confirmation.`;
 }
 
 const StripeHostedCheckout: React.FC<StripeHostedCheckoutProps> = ({ cartItems, total, shippingSummary }) => {
@@ -92,39 +30,28 @@ const StripeHostedCheckout: React.FC<StripeHostedCheckoutProps> = ({ cartItems, 
   const handleCheckout = async () => {
     setLoading(true);
     setError(null);
-
     try {
-      // Get current origin for redirect URLs
       const origin = window.location.origin;
-      
-      // Create checkout session
       const { url } = await apiService.createCheckoutSession(
         cartItems,
-        `${origin}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`, // Redirect with Stripe session reference
-        `${origin}/?checkout=cancelled` // Redirect to homepage with cancelled parameter
+        `${origin}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+        `${origin}/?checkout=cancelled`
       );
-
-      // Redirect to Stripe's hosted checkout
       window.location.href = url;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during checkout');
+    } catch (checkoutError) {
+      setError(checkoutError instanceof Error ? checkoutError.message : "Checkout could not be started.");
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <CheckoutButton onClick={handleCheckout} disabled={loading}>
-        {loading && <LoadingSpinner />}
-        {loading ? 'Redirecting to Stripe...' : getCheckoutLabel(total, shippingSummary)}
-      </CheckoutButton>
-
-      {error && <ErrorMessage>{error}</ErrorMessage>}
-
-      <SecurityNote>
-        <SecurityIcon>🔒</SecurityIcon>
-        {getShippingNote(shippingSummary)}
-      </SecurityNote>
+    <div className="hosted-checkout">
+      <button className="button button--primary hosted-checkout__button" type="button" onClick={handleCheckout} disabled={loading}>
+        {loading && <span className="loading-spinner" aria-hidden="true" />}
+        {loading ? "Redirecting to Stripe…" : getCheckoutLabel(total, shippingSummary)}
+      </button>
+      {error && <div className="checkout-error" role="alert">{error}</div>}
+      <p className="security-note"><span aria-hidden="true">🔒</span>{getShippingNote(shippingSummary)}</p>
     </div>
   );
 };

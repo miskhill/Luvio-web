@@ -1,135 +1,7 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import { apiService, CharityImpactResponse } from "../services/api";
 import { useNavigation } from "../App";
-
-const HomeCard = styled.section`
-  width: min(100%, 760px);
-  margin: 0 auto 3rem;
-  padding: 2rem;
-  border: 1px solid rgba(232, 65, 24, 0.65);
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(232, 65, 24, 0.16), rgba(34, 34, 34, 0.96));
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
-`;
-
-const Eyebrow = styled.p`
-  margin: 0 0 0.65rem;
-  color: #f47755;
-  font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-`;
-
-const Total = styled.p`
-  margin: 0 0 0.9rem;
-  color: #e9e2c8;
-  font-size: clamp(2rem, 6vw, 3.35rem);
-  font-weight: 700;
-  line-height: 1.08;
-`;
-
-const SupportingText = styled.p`
-  max-width: 620px;
-  margin: 0 auto;
-  color: #d6d0bc;
-  font-size: 1.05rem;
-  line-height: 1.65;
-`;
-
-const ImpactButton = styled.button`
-  margin-top: 1.4rem;
-  padding: 0.8rem 1.4rem;
-  border: 2px solid #e84118;
-  border-radius: 999px;
-  background: #e84118;
-  color: #fff;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 700;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-
-  &:hover {
-    background: #c23616;
-    transform: translateY(-1px);
-  }
-
-  &:focus-visible {
-    outline: 3px solid #f1c40f;
-    outline-offset: 3px;
-  }
-`;
-
-const Page = styled.main`
-  width: min(100%, 900px);
-  padding: clamp(1.5rem, 5vw, 4rem);
-  border-radius: 18px;
-  background: #222;
-  text-align: left;
-
-  @media (max-width: 480px) {
-    padding: 1.25rem;
-    border-radius: 14px;
-  }
-`;
-
-const PageTitle = styled.h1`
-  margin: 0 0 1.25rem;
-  color: #e84118;
-  font-size: clamp(2.2rem, 7vw, 4rem);
-  line-height: 1.05;
-`;
-
-const Lead = styled.p`
-  margin: 0 0 1.25rem;
-  color: #e9e2c8;
-  font-size: clamp(1.1rem, 3vw, 1.35rem);
-  line-height: 1.65;
-`;
-
-const TotalPanel = styled.div`
-  margin: 2.25rem 0;
-  padding: clamp(1.5rem, 5vw, 2.5rem);
-  border-left: 5px solid #e84118;
-  border-radius: 0 14px 14px 0;
-  background: #181818;
-
-  @media (max-width: 480px) {
-    margin: 1.75rem 0;
-    padding: 1.25rem;
-  }
-`;
-
-const SectionTitle = styled.h2`
-  margin: 2.25rem 0 0.8rem;
-  color: #e9e2c8;
-  font-size: 1.6rem;
-`;
-
-const BodyText = styled.p`
-  margin: 0 0 1rem;
-  color: #d6d0bc;
-  font-size: 1.05rem;
-  line-height: 1.7;
-`;
-
-const MindLink = styled.a`
-  color: #f47755;
-  font-weight: 700;
-
-  &:focus-visible {
-    outline: 3px solid #f1c40f;
-    outline-offset: 3px;
-  }
-`;
-
-const DonationList = styled.ul`
-  margin: 0;
-  padding-left: 1.3rem;
-  color: #d6d0bc;
-  line-height: 1.7;
-`;
+import "./CharityImpact.scss";
 
 function formatPledge(totalPledgedPence: number, currency: string): string {
   return new Intl.NumberFormat("en-GB", {
@@ -147,40 +19,35 @@ function useCharityImpact() {
 
   useEffect(() => {
     let mounted = true;
-
-    apiService
-      .getCharityImpact()
+    apiService.getCharityImpact()
       .then((response) => {
         if (!mounted) return;
         setImpact(response);
         setFailed(false);
       })
       .catch(() => {
-        if (!mounted) return;
-        setFailed(true);
+        if (mounted) setFailed(true);
       })
       .finally(() => {
         if (mounted) setLoading(false);
       });
-
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
   return { impact, loading, failed };
 }
 
 function LiveTotal({ impact, loading, failed }: ReturnType<typeof useCharityImpact>) {
-  if (loading) return <Total aria-live="polite">Loading our current pledge…</Total>;
-  if (failed || !impact) {
-    return <Total aria-live="polite">Live total temporarily unavailable</Total>;
+  if (loading) {
+    return <p className="charity-total charity-total--status" aria-live="polite">Loading our current pledge…</p>;
   }
-
+  if (failed || !impact) {
+    return <p className="charity-total charity-total--status" aria-live="polite">Live total temporarily unavailable</p>;
+  }
   return (
-    <Total aria-live="polite">
-      {formatPledge(impact.totalPledgedPence, impact.currency)} pledged so far
-    </Total>
+    <p className="charity-total" aria-live="polite">
+      {formatPledge(impact.totalPledgedPence, impact.currency)} <span>pledged so far</span>
+    </p>
   );
 }
 
@@ -189,16 +56,24 @@ export function CharityHomeCard() {
   const { navigateTo } = useNavigation();
 
   return (
-    <HomeCard aria-labelledby="charity-home-heading">
-      <Eyebrow id="charity-home-heading">Luvio x Mind</Eyebrow>
-      <LiveTotal {...impactState} />
-      <SupportingText>
-        £1 from every individual band sold through our website goes towards supporting Mind.
-      </SupportingText>
-      <ImpactButton type="button" onClick={() => navigateTo("charity")}>
-        Discover our charity impact
-      </ImpactButton>
-    </HomeCard>
+    <section className="charity-home" aria-labelledby="charity-home-heading">
+      <div className="charity-home__copy">
+        <p className="eyebrow" id="charity-home-heading">Luvio x Mind</p>
+        <h2>Every band can help make a difference.</h2>
+        <p>
+          £1 from every individual band sold through our website goes towards supporting Mind.
+          A three-band pack adds £3 to the pledge.
+        </p>
+        <button className="button button--secondary" type="button" onClick={() => navigateTo("charity")}>
+          See our charity impact
+        </button>
+      </div>
+      <div className="charity-home__total">
+        <span className="charity-home__label">Live fundraising total</span>
+        <LiveTotal {...impactState} />
+        <span className="charity-home__source">Calculated from eligible paid website orders.</span>
+      </div>
+    </section>
   );
 }
 
@@ -207,56 +82,74 @@ export function CharityPage() {
   const donations = impactState.impact?.donations || [];
 
   return (
-    <Page>
-      <Eyebrow>Luvio x Mind</Eyebrow>
-      <PageTitle>Making a Difference Together</PageTitle>
-      <Lead>
-        At Luvio, we believe connection is about more than meeting new people. It is about building
-        a community where people feel welcome, included and supported.
-      </Lead>
-      <BodyText>That is why we want Luvio to give something back.</BodyText>
+    <main id="main-content" className="page charity-page">
+      <header className="page-intro charity-intro">
+        <p className="eyebrow">Luvio x Mind</p>
+        <h1 className="page-title">Making a difference together.</h1>
+        <p className="page-lead">
+          Connection is about more than meeting new people. It is also about building a community
+          where people feel welcome, included and supported.
+        </p>
+      </header>
 
-      <TotalPanel>
-        <Eyebrow>Our fundraising total</Eyebrow>
-        <LiveTotal {...impactState} />
-        <SupportingText>
-          This is the cumulative amount pledged to Mind through eligible online band sales.
-        </SupportingText>
-      </TotalPanel>
+      <section className="charity-impact-panel" aria-labelledby="fundraising-total-title">
+        <div>
+          <p className="eyebrow" id="fundraising-total-title">Our fundraising total</p>
+          <LiveTotal {...impactState} />
+        </div>
+        <p>This live figure is the cumulative amount pledged through eligible online band sales.</p>
+      </section>
 
-      <SectionTitle>How the pledge works</SectionTitle>
-      <BodyText>
-        Every individual band in a successfully paid website order adds £1 to the total. A pack of
-        three bands adds £3. Failed, abandoned and unpaid checkouts are not included.
-      </BodyText>
-      <BodyText>
-        The counter shows money pledged, which may not yet have been transferred. We aim to donate
-        accumulated funds monthly and keep the record transparent. Refunds do not reduce the pledge;
-        Luvio absorbs that contribution.
-      </BodyText>
+      <div className="charity-content-grid">
+        <section aria-labelledby="pledge-title">
+          <h2 id="pledge-title">How the pledge works</h2>
+          <p>
+            Every individual band in a successfully paid website order adds £1 to the total. A
+            pack of three bands adds £3. Failed, abandoned and unpaid checkouts are not included.
+          </p>
+          <p>
+            The counter shows money pledged, which may not yet have been transferred. We aim to
+            donate accumulated funds monthly and keep the record transparent. Refunds do not
+            reduce the pledge; Luvio absorbs that contribution.
+          </p>
+        </section>
 
-      <SectionTitle>Completed donations</SectionTitle>
-      {donations.length > 0 ? (
-        <DonationList>
-          {donations.map((donation) => (
-            <li key={`${donation.period}-${donation.paidAt}`}>
-              {donation.period}: {formatPledge(donation.amountPence, "GBP")} donated on{" "}
-              {new Date(donation.paidAt).toLocaleDateString("en-GB")}
-            </li>
-          ))}
-        </DonationList>
-      ) : (
-        <BodyText>No completed monthly donations have been recorded yet.</BodyText>
-      )}
+        <aside className="charity-fact" aria-label="What the total means">
+          <strong>£1 per band</strong>
+          <span>from eligible, completed and paid website orders</span>
+        </aside>
+      </div>
 
-      <SectionTitle>About Mind</SectionTitle>
-      <BodyText>
-        Learn more about mental health support and the charity&apos;s work on the{" "}
-        <MindLink href="https://www.mind.org.uk/" target="_blank" rel="noopener noreferrer">
-          official Mind website
-        </MindLink>
-        . This pledge does not imply an official partnership or endorsement.
-      </BodyText>
-    </Page>
+      <section className="charity-section" aria-labelledby="donations-title">
+        <h2 id="donations-title">Completed donations</h2>
+        {donations.length > 0 ? (
+          <ul className="donation-list">
+            {donations.map((donation) => (
+              <li key={`${donation.period}-${donation.paidAt}`}>
+                <span>{donation.period}</span>
+                <strong>{formatPledge(donation.amountPence, "GBP")}</strong>
+                <span>Donated {new Date(donation.paidAt).toLocaleDateString("en-GB")}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No completed monthly donations have been recorded yet.</p>
+        )}
+      </section>
+
+      <section className="charity-section charity-section--mind" aria-labelledby="mind-title">
+        <div>
+          <p className="eyebrow">Mental health support</p>
+          <h2 id="mind-title">About Mind</h2>
+          <p>
+            Learn more about mental health support and the charity&apos;s work on the official Mind
+            website. This pledge does not imply an official partnership or endorsement.
+          </p>
+        </div>
+        <a className="button button--secondary" href="https://www.mind.org.uk/" target="_blank" rel="noopener noreferrer">
+          Visit official Mind website
+        </a>
+      </section>
+    </main>
   );
 }

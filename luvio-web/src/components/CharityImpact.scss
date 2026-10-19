@@ -1,0 +1,96 @@
+@use "../styles/tokens" as *;
+
+.charity-home {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
+  gap: 2rem;
+  align-items: center;
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  border: 1px solid rgba($orange, 0.5);
+  border-radius: $radius-large;
+  background: linear-gradient(135deg, rgba($orange, 0.13), $surface 55%);
+  box-shadow: $shadow;
+}
+.charity-home__copy {
+  h2 { max-width: 19ch; margin: 0 0 1rem; font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.08; }
+  > p:not(.eyebrow) { max-width: 42rem; margin: 0; color: $cream-muted; line-height: 1.7; }
+  .button { margin-top: 1.5rem; }
+}
+.charity-home__total {
+  padding: clamp(1.4rem, 4vw, 2.5rem);
+  border: 1px solid $border;
+  border-radius: $radius-medium;
+  background: rgba($ink, 0.65);
+}
+.charity-home__label, .charity-home__source { display: block; color: $cream-subtle; font-size: 0.8rem; line-height: 1.5; }
+.charity-home__label { margin-bottom: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.charity-total { margin: 0.2rem 0 0.9rem; color: $cream; font-size: clamp(2.1rem, 6vw, 4rem); font-weight: 800; line-height: 1; letter-spacing: -0.045em; }
+.charity-total span { display: block; margin-top: 0.45rem; color: $cream-muted; font-size: 0.35em; letter-spacing: 0; }
+.charity-total--status { font-size: clamp(1.35rem, 4vw, 2.2rem); line-height: 1.15; letter-spacing: -0.025em; }
+
+.charity-page { padding-bottom: 5rem; }
+.charity-intro { max-width: 56rem; }
+.charity-impact-panel {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 2rem;
+  align-items: end;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border-radius: $radius-large;
+  background: linear-gradient(135deg, rgba($orange, 0.18), $surface);
+  .charity-total { margin-bottom: 0; }
+  > p { margin: 0; color: $cream-muted; line-height: 1.7; }
+}
+.charity-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(16rem, 0.7fr);
+  gap: clamp(2rem, 7vw, 6rem);
+  padding: clamp(3rem, 7vw, 6rem) 0;
+  h2 { margin: 0 0 1.25rem; font-size: clamp(1.8rem, 4vw, 2.8rem); }
+  p { margin: 0 0 1.25rem; color: $cream-muted; line-height: 1.8; }
+}
+.charity-fact {
+  align-self: start;
+  padding: 1.75rem;
+  border-left: 0.35rem solid $orange;
+  border-radius: 0 $radius-medium $radius-medium 0;
+  background: $surface;
+  strong { display: block; font-size: clamp(1.8rem, 4vw, 2.8rem); }
+  span { display: block; margin-top: 0.5rem; color: $cream-muted; line-height: 1.6; }
+}
+.charity-section {
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0;
+  border-top: 1px solid $border;
+  h2 { margin: 0 0 1rem; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+  > p { color: $cream-muted; }
+}
+.donation-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  li { display: grid; grid-template-columns: 1fr auto auto; gap: 1.5rem; padding: 1rem 1.25rem; border-radius: $radius-small; background: $surface; color: $cream-muted; }
+  strong { color: $cream; }
+}
+.charity-section--mind {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  > div { max-width: 43rem; }
+  p:last-child { margin: 0; color: $cream-muted; line-height: 1.7; }
+  .button { flex: 0 0 auto; text-decoration: none; }
+}
+
+@media (max-width: 760px) {
+  .charity-home, .charity-impact-panel, .charity-content-grid { grid-template-columns: 1fr; }
+  .charity-section--mind { align-items: flex-start; flex-direction: column; }
+  .donation-list li { grid-template-columns: 1fr auto; }
+  .donation-list li span:last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 620px) {
+  .charity-home { margin-top: 0; }
+  .charity-total { overflow-wrap: anywhere; }
+}
