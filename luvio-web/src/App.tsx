@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import logoImageMain from "./images/Luvio logo2.jpeg";
 import bandsImage from "./images/783c5782-8d4d-4ea3-aee3-48615623eeb2.jpeg";
+import bandsTogetherImage from "./images/luvio-bands-together.jpg";
 import About from "./components/About";
 import EventRequestForm from "./components/EventRequestForm";
 import Shop from "./components/Shop";
@@ -110,6 +111,24 @@ function HomePage() {
           A band shares a social intention. It never implies consent to physical contact or
           guarantees romantic interest.
         </p>
+      </section>
+
+      <section className="section lifestyle-feature" aria-labelledby="lifestyle-title">
+        <div className="lifestyle-feature__media">
+          <img
+            src={bandsTogetherImage}
+            alt="Three people wearing red, yellow and green Luvio wristbands"
+            loading="lazy"
+          />
+        </div>
+        <div className="lifestyle-feature__copy">
+          <p className="eyebrow">Easy to see. Easy to respect.</p>
+          <h2 id="lifestyle-title">Signals that make sense in the moment.</h2>
+          <p>
+            At a busy venue or social event, a simple colour can make intentions easier to read—so
+            people can connect with more confidence and less guesswork.
+          </p>
+        </div>
       </section>
 
       <CharityHomeCard />

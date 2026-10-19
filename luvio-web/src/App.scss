@@ -186,6 +186,31 @@
   line-height: 1.65;
 }
 
+.lifestyle-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 5rem);
+  border-top: 1px solid $border;
+}
+.lifestyle-feature__media {
+  overflow: hidden;
+  border: 1px solid $border;
+  border-radius: $radius-large;
+  box-shadow: $shadow;
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+.lifestyle-feature__copy {
+  h2 { margin: 0 0 1rem; font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1.08; letter-spacing: -0.035em; }
+  > p:last-child { margin: 0; color: $cream-muted; line-height: 1.75; }
+}
+
 .event-callout {
   display: flex;
   align-items: flex-end;
@@ -231,6 +256,8 @@
   .hero__visual { width: min(100%, 36rem); }
   .signal-grid { grid-template-columns: 1fr; }
   .signal-card { min-height: 0; }
+  .lifestyle-feature { grid-template-columns: 1fr; }
+  .lifestyle-feature__media { width: min(100%, 42rem); }
   .event-callout { align-items: flex-start; flex-direction: column; }
 }
 
@@ -248,11 +275,25 @@
     &::-webkit-scrollbar { display: none; }
   }
   .primary-nav__item { min-height: 2.5rem; padding: 0.55rem 0.75rem; font-size: 0.82rem; }
-  .hero { gap: 2rem; padding: 2.5rem 0 3.5rem; }
-  .hero h1, .page-title { font-size: clamp(2.35rem, 13vw, 3.2rem); }
-  .button-row { display: grid; }
+  .hero { gap: 1.75rem; padding: 2rem 0 3rem; }
+  .hero h1, .page-title { font-size: clamp(2.3rem, 12vw, 2.95rem); }
+  .hero__lead { margin-top: 1.2rem; line-height: 1.62; }
+  .button-row { display: grid; gap: 0.65rem; margin-top: 1.5rem; }
   .button-row .button { width: 100%; }
-  .section { padding: 3.75rem 0; }
+  .hero__visual { padding: 0.8rem; border-radius: $radius-medium; }
+  .hero__image-caption { margin-top: 0.75rem; }
+  .section { padding: 3rem 0; }
+  .section-heading { margin-bottom: 1.5rem; }
+  .section-heading > p:last-child { line-height: 1.6; }
+  .signal-grid { gap: 0.75rem; }
+  .signal-card { padding: 1.25rem; }
+  .signal-card h3 { margin-top: 1rem; }
+  .lifestyle-feature { gap: 1.5rem; }
+  .lifestyle-feature__media { border-radius: $radius-medium; }
+  .lifestyle-feature__copy > p:last-child { line-height: 1.65; }
+  .event-callout { gap: 1.5rem; margin: 1rem 0 4rem; }
+  .page-intro { padding: 2.75rem 0 2.5rem; }
+  .page-intro .page-lead { margin-top: 1.15rem; line-height: 1.65; }
   .site-footer { align-items: flex-start; flex-direction: column; }
   .site-footer__links { justify-content: flex-start; }
 }

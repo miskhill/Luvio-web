@@ -1,4 +1,5 @@
 import React, { FormEvent, useState } from "react";
+import nightOutImage from "../images/luvio-night-out.jpg";
 import "./EventRequestForm.scss";
 
 const EventRequestForm = () => {
@@ -73,12 +74,19 @@ const EventRequestForm = () => {
   return (
     <main id="main-content" className="page event-page">
       <header className="page-intro event-intro">
-        <p className="eyebrow">Events and venues</p>
-        <h1 className="page-title">Bring Luvio to your next event.</h1>
-        <p className="page-lead">
-          Planning a pub night, club event, festival or community gathering? Share the details
-          below and we will help you work out what you need.
-        </p>
+        <div className="event-intro__copy">
+          <p className="eyebrow">Events and venues</p>
+          <h1 className="page-title">Bring Luvio to your next event.</h1>
+          <p className="page-lead">
+            Planning a pub night, club event, festival or community gathering? Share the details
+            below and we will help you work out what you need.
+          </p>
+        </div>
+        <img
+          className="event-intro__image"
+          src={nightOutImage}
+          alt="Friends socialising at a venue while wearing Luvio wristbands"
+        />
       </header>
 
       <div className="event-layout">
